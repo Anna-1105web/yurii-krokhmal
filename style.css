@@ -1443,3 +1443,6 @@ html:not(.js) .strip-nav { display: none; }
 html.sheet-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .sheet-inner { animation: none; } .sheet-strip { scroll-behavior: auto; } }
 .case-kpis strong { white-space: nowrap; font-size: clamp(19px, 5.2vw, 24px); }
+
+/* Smoother, calmer tilt */
+.tilt.is-tilting { transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .3s, box-shadow .3s; }

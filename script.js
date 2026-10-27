@@ -711,17 +711,29 @@ function initCounters() {
 function initTilt() {
   if (prefersReducedMotion || !finePointer) return;
   $$(".tilt").forEach((card) => {
-    const max = card.classList.contains("video-card") || card.classList.contains("photo-window") ? 6 : 8;
-    card.addEventListener("pointermove", (e) => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
+    let frame = null, x = 0, y = 0, overControl = false;
+    const apply = () => {
+      frame = null;
+      // Tall cards (pricing) tilt much less, so their edges don't swing.
+      const tall = card.offsetHeight > 480;
+      const max = tall ? 2 : card.classList.contains("video-card") ? 5 : 6;
       card.classList.add("is-tilting");
       card.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(1)}%`);
       card.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(1)}%`);
-      card.style.transform = `perspective(900px) translate3d(0, -6px, 18px) rotateX(${(-y * max).toFixed(2)}deg) rotateY(${(x * max).toFixed(2)}deg)`;
+      // Over a button or link the card settles flat and only stays lifted,
+      // so the button itself doesn't move under the cursor.
+      const rx = overControl ? 0 : -y * max, ry = overControl ? 0 : x * max;
+      card.style.transform = `perspective(${tall ? 1800 : 1000}px) translate3d(0, -4px, 0) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+    };
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      x = (e.clientX - r.left) / r.width - 0.5;
+      y = (e.clientY - r.top) / r.height - 0.5;
+      overControl = !!e.target.closest("a, button, video, input, select, textarea");
+      if (!frame) frame = requestAnimationFrame(apply);
     });
     card.addEventListener("pointerleave", () => {
+      if (frame) { cancelAnimationFrame(frame); frame = null; }
       card.classList.remove("is-tilting");
       card.style.transform = "";
     });
