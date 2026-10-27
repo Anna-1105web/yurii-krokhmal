@@ -1446,3 +1446,9 @@ html.sheet-open { overflow: hidden; }
 
 /* Smoother, calmer tilt */
 .tilt.is-tilting { transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .3s, box-shadow .3s; }
+
+/* Pricing cards: simple lift on hover instead of 3D tilt (tall cards flickered at the edges) */
+.price-card { transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .35s; }
+@media (hover: hover) and (pointer: fine) {
+  .price-card.landed:hover { transform: translateY(-4px); box-shadow: 0 40px 70px -40px rgba(0,0,0,.95), 0 0 0 1px var(--line-strong); }
+}
